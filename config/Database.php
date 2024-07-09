@@ -1,6 +1,6 @@
 <?php
 class Database {
-    private $host = 'localhost';
+    private $host = 'localhost:3303';
     private $db_name = 'race_management';
     private $username = 'root';
     private $password = '';
