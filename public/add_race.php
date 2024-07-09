@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer') {
 
 $database = new Database();
 $db = $database->getConnection();
-$race = new \classes\Race($db);
+$race = new Race($db);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $race->organizer_id = $_SESSION['user_id'];

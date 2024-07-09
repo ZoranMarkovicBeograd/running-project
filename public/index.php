@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $database = new Database();
 $db = $database->getConnection();
-$race = new \classes\Race($db);
+$race = new Race($db);
 $races = $race->getAll();
 ?>
 

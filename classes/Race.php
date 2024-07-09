@@ -1,6 +1,5 @@
 <?php
 
-namespace classes;
 class Race {
     private $conn;
     private $table_name = "races";
