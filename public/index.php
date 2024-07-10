@@ -1,17 +1,14 @@
 <?php
 session_start();
-require_once '../config/Database.php';
-require_once '../classes/Race.php';
-require_once '../classes/RaceParticipant.php';
+require_once '../models/Race.php';
+require_once '../models/RaceParticipant.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-$database = new Database();
-$db = $database->getConnection();
-$race = new Race($db);
+$race = new Race();
 $races = $race->getAll();
 ?>
 
@@ -21,29 +18,31 @@ $races = $race->getAll();
     <title>Trke</title>
 </head>
 <body>
-<?php if ($_SESSION['role'] == 'organizer') { ?>
+<?php if ($_SESSION['role'] == 'organizer') : ?>
     <a href="add_race.php">Dodaj trku</a><br><br>
-<?php } ?>
+<?php endif; ?>
 <h2>Dostupne trke</h2>
 <form method="GET" action="">
     <label>Pretraga po gradu: <input type="text" name="location"></label>
     <button type="submit">Pretraži</button>
 </form>
 <ul>
-    <?php while ($row = $races->fetch(PDO::FETCH_ASSOC)) { ?>
+    <?php foreach($races as $race): ?>
         <li>
-            <strong>Lokacija:</strong> <?= htmlspecialchars($row['location']) ?><br>
-            <strong>Dužina:</strong> <?= htmlspecialchars($row['distance']) ?> metara<br>
-            <strong>Datum i vreme početka:</strong> <?= htmlspecialchars($row['start_time']) ?><br>
-            <strong>Učesnici:</strong> <?= $row['participant_count'] ?>/<?= $row['max_participants'] ?><br>
-            <?php if ($row['participant_count'] < $row['max_participants'] && $_SESSION['role'] == 'runner') { ?>
+            <strong>Lokacija:</strong> <?= htmlspecialchars($race['location']) ?><br>
+            <strong>Dužina:</strong> <?= htmlspecialchars($race['distance']) ?> metara<br>
+            <strong>Datum i vreme početka:</strong> <?= htmlspecialchars($race['start_time']) ?><br>
+            <strong>Učesnici:</strong> <?= $race['participant_count'] ?>/<?= $race['max_participants'] ?><br>
+
+            <?php if ($race->canParticipate($race)): ?>
                 <form method="POST" action="join_race.php">
-                    <input type="hidden" name="race_id" value="<?= $row['id'] ?>">
+                    <input type="hidden" name="race_id" value="<?= $race['id'] ?>">
                     <button type="submit">Join</button>
                 </form>
-            <?php } ?>
+            <?php endif; ?>
+
         </li>
-    <?php } ?>
+    <?php endforeach; ?>
 </ul>
 </body>
 </html>

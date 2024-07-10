@@ -1,22 +1,18 @@
 <?php
 
-class Race {
-    private $conn;
-    private $table_name = "races";
+class Race extends Database
+{
+    const TABLE_NAME = "races";
 
-    public $id;
-    public $organizer_id;
-    public $location;
-    public $distance;
-    public $start_time;
-    public $max_participants;
+    public int $organizer_id;
+    public int $location;
+    public int $distance;
+    public int $start_time;
+    public int $max_participants;
 
-    public function __construct($db) {
-        $this->conn = $db;
-    }
-
-    public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (organizer_id, location, distance, start_time, max_participants) VALUES (:organizer_id, :location, :distance, :start_time, :max_participants)";
+    public function create(): bool
+    {
+        $query = "INSERT INTO " . self::TABLE_NAME . " (organizer_id, location, distance, start_time, max_participants) VALUES (:organizer_id, :location, :distance, :start_time, :max_participants)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":organizer_id", $this->organizer_id);
@@ -25,14 +21,11 @@ class Race {
         $stmt->bindParam(":start_time", $this->start_time);
         $stmt->bindParam(":max_participants", $this->max_participants);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
+        return $stmt->execute();
     }
 
-    public function getAll() {
+    public function getAll(): array
+    {
         $query = "SELECT races.*, COUNT(race_participants.id) AS participant_count 
                   FROM " . $this->table_name . " 
                   LEFT JOIN race_participants ON races.id = race_participants.race_id 
@@ -40,7 +33,12 @@ class Race {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
-        return $stmt;
+        return $stmt->fetchAssoc();
+    }
+
+    public function canParticipate($race): bool
+    {
+        return $race['participant_count'] < $race['max_participants'] && $_SESSION['role'] == 'runner';
     }
 }
 ?>

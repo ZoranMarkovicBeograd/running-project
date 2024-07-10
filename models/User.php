@@ -26,11 +26,7 @@ class User {
         $stmt->bindParam(":password", $this->password);
         $stmt->bindParam(":role", $this->role);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
+        return $stmt->execute();
     }
 
     public function login() {
@@ -42,11 +38,12 @@ class User {
         $stmt->execute();
 
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
-        if ($user && password_verify($this->password, $user['password'])) {
-            $this->id = $user['id'];
-            $this->role = $user['role'];
-            return true;
+        if (!$user || !password_verify($this->password, $user['password'])) {
+            return false;
         }
+
+        $this->id = $user['id'];
+        $this->role = $user['role'];
 
         return false;
     }

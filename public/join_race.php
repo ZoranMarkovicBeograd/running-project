@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../config/Database.php';
-require_once '../classes/RaceParticipant.php';
+require_once '../models/RaceParticipant.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'runner') {
     header("Location: login.php");

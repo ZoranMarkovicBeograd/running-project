@@ -12,27 +12,32 @@ class RaceParticipant {
         $this->conn = $db;
     }
 
-    public function join() {
-        // Provera da li je trka popunjena
+    public function canJoinRace(): int
+    {
         $query = "SELECT max_participants, (SELECT COUNT(*) FROM race_participants WHERE race_id = :race_id) AS participant_count FROM races WHERE id = :race_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":race_id", $this->race_id);
         $stmt->execute();
+
         $race = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($race && $race['participant_count'] < $race['max_participants']) {
-            $query = "INSERT INTO " . $this->table_name . " (race_id, user_id) VALUES (:race_id, :user_id)";
-            $stmt = $this->conn->prepare($query);
+        return $race && $race['participant_count'] < $race['max_participants'];
+    }
 
-            $stmt->bindParam(":race_id", $this->race_id);
-            $stmt->bindParam(":user_id", $this->user_id);
+    public function join(): bool
+    {
 
-            if ($stmt->execute()) {
-                return true;
-            }
+        if(!$this->canJoinRace()) {
+            return false;
         }
 
-        return false;
+        $query = "INSERT INTO " . $this->table_name . " (race_id, user_id) VALUES (:race_id, :user_id)";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(":race_id", $this->race_id);
+        $stmt->bindParam(":user_id", $this->user_id);
+
+        return $stmt->execute();
     }
 }
 ?>
