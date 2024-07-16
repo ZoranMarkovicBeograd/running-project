@@ -1,21 +1,24 @@
 <?php
 
+require_once '../config/Database.php';
+class User extends Database {
 
-class User {
-    private $conn;
-    private $table_name = "users";
+    const TABLE_NAME= "users";
 
-    public $id;
-    public $username;
-    public $password;
-    public $role;
+    public int $id;
+    public string $username;
+    public string $password;
+    public string $role;
 
-    public function __construct($db) {
-        $this->conn = $db;
+    public function __construct() {
+        $this->conn = $this->getConnection();
     }
 
     public function register() {
-        $query = "INSERT INTO " . $this->table_name . " (username, password, role) VALUES (:username, :password, :role)";
+
+
+
+        $query = "INSERT INTO " . self::TABLE_NAME . " (username, password, role) VALUES (:username, :password, :role)";
         $stmt = $this->conn->prepare($query);
 
         $this->username = htmlspecialchars(strip_tags($this->username));
@@ -30,7 +33,9 @@ class User {
     }
 
     public function login() {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE username = :username";
+
+        $query = "SELECT * FROM " . self::TABLE_NAME . " WHERE username = :username";
+
         $stmt = $this->conn->prepare($query);
 
         $this->username = htmlspecialchars(strip_tags($this->username));

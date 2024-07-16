@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../config/Database.php';
+
+
 class Race extends Database
 {
     const TABLE_NAME = "races";

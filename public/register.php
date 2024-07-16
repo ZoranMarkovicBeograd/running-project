@@ -2,15 +2,12 @@
 require_once '../config/Database.php';
 require_once '../models/User.php';
 
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
+$user = new User();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user->username = $_POST['username'];
     $user->password = $_POST['password'];
     $user->role = $_POST['role'];
-
     if ($user->register()) {
         header("Location: login.php");
         exit();

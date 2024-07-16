@@ -1,16 +1,12 @@
 <?php
 
-class RaceParticipant {
-    private $conn;
-    private $table_name = "race_participants";
+require_once __DIR__ . '/../config/Database.php';
+class RaceParticipant extends Database {
+    const TABLE_NAME = "race_participants";
 
-    public $id;
-    public $race_id;
-    public $user_id;
+    public int $race_id;
+    public int $user_id;
 
-    public function __construct($db) {
-        $this->conn = $db;
-    }
 
     public function canJoinRace(): int
     {
@@ -31,7 +27,7 @@ class RaceParticipant {
             return false;
         }
 
-        $query = "INSERT INTO " . $this->table_name . " (race_id, user_id) VALUES (:race_id, :user_id)";
+        $query = "INSERT INTO " . self::TABLE_NAME . " (race_id, user_id) VALUES (:race_id, :user_id)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":race_id", $this->race_id);
